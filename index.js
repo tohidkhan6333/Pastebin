@@ -5,16 +5,12 @@ const app = express();
 
 const PORT = process.env.PORT || 8000;
 
-app.listen(PORT, '0.0.0.0', () => {
-  console.log("Server running on port " + PORT);
-});
-
 // Routers
 const qrRouter = require('./qr');
 const codeRouter = require('./pair');
 
 // Increase max event listeners (avoid warnings)
-import('events').EventEmitter.defaultMaxListeners = 500;
+require('events').EventEmitter.defaultMaxListeners = 500;
 
 // Middleware
 app.use(bodyParser.json());
@@ -41,9 +37,9 @@ app.get('/', (req, res) => {
 app.use('/css', express.static(path.join(__dirname, 'css')));
 app.use('/js', express.static(path.join(__dirname, 'js')));
 
-// Start server
-app.listen(PORT, () => {
-  console.log(`✅ Server running on http://localhost:${PORT}`);
+// Start server - ONLY ONE app.listen
+app.listen(PORT, '0.0.0.0', () => {
+  console.log(`✅ Server running on http://0.0.0.0:${PORT}`);
 });
 
 module.exports = app;

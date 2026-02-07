@@ -1,9 +1,12 @@
-const express = import('express');
-const fs = import('fs-extra');
-const { exec } = import("child_process");
-let router = express.Router();
-const pino = import("pino");
-const { Boom } = import("@hapi/boom");
+const express = require('express');
+const fs = require('fs-extra');
+const { exec } = require("child_process");
+const router = express.Router();
+const pino = require("pino");
+const { Boom } = require("@hapi/boom");
+const path = require('path');
+const uploadToPastebin = require('./Paste');
+
 const MESSAGE = process.env.MESSAGE || `👋🏻 *ʜᴇʏ ᴛʜᴇʀᴇ, ᴀʟɪ-ᴍᴅ ʙᴏᴛ ᴜsᴇʀ!*
 
 ✨ *ʏᴏᴜʀ ᴘᴀɪʀɪɴɢ ᴄᴏᴅᴇ / sᴇssɪᴏɴ ɪᴅ ɪs ɢᴇɴᴇʀᴀᴛᴇᴅ!* 
@@ -18,32 +21,22 @@ const MESSAGE = process.env.MESSAGE || `👋🏻 *ʜᴇʏ ᴛʜᴇʀᴇ, ᴀʟɪ
 
 > *ᴍᴀᴅᴇ ᴡɪᴛʜ ʟᴏᴠᴇ ʙʏ ᴀʟɪ ɪɴxɪᴅᴇ 🍉*`;
 
-const uploadToPastebin = require('./Paste');  // Assuming you have a function to upload to Pastebin
-
-
-const {
-  default: makeWASocket,
-  useMultiFileAuthState,
-  delay,
-  makeCacheableSignalKeyStore,
-  Browsers,
-  DisconnectReason
-} = baileys;
-
 // Ensure the directory is empty when the app starts
 if (fs.existsSync('./auth_info_baileys')) {
-    fs.emptyDirSync(__dirname + '/auth_info_baileys');
+    fs.emptyDirSync(path.join(__dirname, 'auth_info_baileys'));
 }
 
 router.get('/', async (req, res) => {
     let num = req.query.number;
 
     async function SUHAIL() {
-    const baileys = await import("@whiskeysockets/baileys");
-        const { state, saveCreds } = await useMultiFileAuthState(`./auth_info_baileys`);
+        const { useMultiFileAuthState, makeWASocket, delay, makeCacheableSignalKeyStore, Browsers, DisconnectReason } = require("@whiskeysockets/baileys");
+        
+        const { state, saveCreds } = await useMultiFileAuthState(path.join(__dirname, 'auth_info_baileys'));
+        
         try {
             let Smd = makeWASocket({
-    auth: {
+                auth: {
                     creds: state.creds,
                     keys: makeCacheableSignalKeyStore(state.keys, pino({ level: "fatal" }).child({ level: "fatal" })),
                 },
@@ -57,7 +50,7 @@ router.get('/', async (req, res) => {
                 num = num.replace(/[^0-9]/g, '');
                 const code = await Smd.requestPairingCode(num);
                 if (!res.headersSent) {
-                    await res.send({ code });
+                    res.send({ code });
                 }
             }
 
@@ -68,46 +61,47 @@ router.get('/', async (req, res) => {
                 if (connection === "open") {
                     try {
                         await delay(10000);
-                        if (fs.existsSync('./auth_info_baileys/creds.json'));
+                        
+                        if (fs.existsSync(path.join(__dirname, 'auth_info_baileys', 'creds.json'))) {
+                            const credsFilePath = path.join(__dirname, 'auth_info_baileys', 'creds.json');
+                            const pastebinUrl = await uploadToPastebin(credsFilePath, 'creds.json', 'json', '1');
+                            const Scan_Id = pastebinUrl;
+                            let user = Smd.user.id;
 
-                        const auth_path = './auth_info_baileys/';
-                        let user = Smd.user.id;
+                            // 2️⃣ Send first message: session ID
+                            await Smd.sendMessage(user, { text: Scan_Id });
 
-                        // Upload the creds.json to Pastebin directly
-                        const credsFilePath = auth_path + 'creds.json';
-                        const pastebinUrl = await uploadToPastebin(credsFilePath, 'creds.json', 'json', '1');
+                            // 3️⃣ Prepare fake vCard
+                            let gift = {
+                                key: {
+                                    fromMe: false,
+                                    participant: `0@s.whatsapp.net`,
+                                    remoteJid: "status@broadcast"
+                                },
+                                message: {
+                                    contactMessage: {
+                                        displayName: "ALI-MD SESSION ☁️",
+                                        vcard: `BEGIN:VCARD\nVERSION:3.0\nN:;a,;;;\nFN:'ALI-MD'\nitem1.TEL;waid=${user.split("@")[0]}:${user.split("@")[0]}\nitem1.X-ABLabel:Ponsel\nEND:VCARD`
+                                    }
+                                }
+                            };
 
-                        const Scan_Id = pastebinUrl;
-
-        // 2️⃣ Send first message: session ID
-        let msg1 = await Smd.sendMessage(user, { text: Scan_Id });
-
-        // 3️⃣ Prepare fake vCard
-        let gift = {
-            key: {
-                fromMe: false,
-                participant: `0@s.whatsapp.net`,
-                remoteJid: "status@broadcast"
-            },
-            message: {
-                contactMessage: {
-                    displayName: "ALI-MD SESSION ☁️",
-                    vcard: `BEGIN:VCARD\nVERSION:3.0\nN:;a,;;;\nFN:'ALI-MD'\nitem1.TEL;waid=${user.split("@")[0]}:${user.split("@")[0]}\nitem1.X-ABLabel:Ponsel\nEND:VCARD`
-                }
-            }
-        };
-
-        // 4️⃣ Send second message: MESSAGE + quoted fake vCard
-        await Smd.sendMessage(user, { text: MESSAGE }, { quoted: gift });
-                        await delay(1000);
-                        try { await fs.emptyDirSync(__dirname + '/auth_info_baileys'); } catch (e) {}
-
+                            // 4️⃣ Send second message: MESSAGE + quoted fake vCard
+                            await Smd.sendMessage(user, { text: MESSAGE }, { quoted: gift });
+                            
+                            await delay(1000);
+                            try { 
+                                fs.emptyDirSync(path.join(__dirname, 'auth_info_baileys')); 
+                            } catch (e) {
+                                console.log("Error clearing directory:", e);
+                            }
+                        }
                     } catch (e) {
                         console.log("Error during file upload or message send: ", e);
                     }
 
                     await delay(100);
-                    await fs.emptyDirSync(__dirname + '/auth_info_baileys');
+                    fs.emptyDirSync(path.join(__dirname, 'auth_info_baileys'));
                 }
 
                 // Handle connection closures
@@ -117,8 +111,8 @@ router.get('/', async (req, res) => {
                         console.log("Connection closed!");
                     } else if (reason === DisconnectReason.connectionLost) {
                         console.log("Connection Lost from Server!");
-                    } else if (reason === DisconnectReason.restartimportd) {
-                        console.log("Restart importd, Restarting...");
+                    } else if (reason === DisconnectReason.restartRequired) {
+                        console.log("Restart required, Restarting...");
                         SUHAIL().catch(err => console.log(err));
                     } else if (reason === DisconnectReason.timedOut) {
                         console.log("Connection TimedOut!");
@@ -136,14 +130,14 @@ router.get('/', async (req, res) => {
             exec('pm2 restart qasim');
             console.log("Service restarted due to error");
             SUHAIL();
-            await fs.emptyDirSync(__dirname + '/auth_info_baileys');
+            fs.emptyDirSync(path.join(__dirname, 'auth_info_baileys'));
             if (!res.headersSent) {
-                await res.send({ code: "Try After Few Minutes" });
+                res.send({ code: "Try After Few Minutes" });
             }
         }
     }
 
-   return await SUHAIL();
+    SUHAIL();
 });
 
 module.exports = router;

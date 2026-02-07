@@ -25,28 +25,21 @@ const MESSAGE = process.env.MESSAGE || `
 `;
 
 if (fs.existsSync('./auth_info_baileys')) {
-  fs.emptyDirSync(__dirname + '/auth_info_baileys');
+  fs.emptyDirSync(path.join(__dirname, 'auth_info_baileys'));
 }
 
 router.get('/', async (req, res) => {
-  
-
-const {
-  default: SuhailWASocket,
-  useMultiFileAuthState,
-  Browsers,
-  delay,
-  DisconnectReason,
-  makeInMemoryStore
-} = baileys;
-  const store = makeInMemoryStore({ logger: pino().child({ level: 'silent', stream: 'store' }) });
+  const store = require("@whiskeysockets/baileys").makeInMemoryStore({ 
+    logger: pino().child({ level: 'silent', stream: 'store' }) 
+  });
 
   async function SUHAIL() {
-  const baileys = await import("@whiskeysockets/baileys");
-    const { state, saveCreds } = await useMultiFileAuthState(__dirname + '/auth_info_baileys');
+    const { useMultiFileAuthState, makeWASocket, Browsers, delay, DisconnectReason } = require("@whiskeysockets/baileys");
+    
+    const { state, saveCreds } = await useMultiFileAuthState(path.join(__dirname, 'auth_info_baileys'));
 
     try {
-      let Smd = SuhailWASocket({
+      let Smd = makeWASocket({
         printQRInTerminal: false,
         logger: pino({ level: "silent" }),
         browser: Browsers.macOS("Desktop"),
@@ -105,7 +98,7 @@ const {
           await delay(3000);
           const user = Smd.user.id;
 
-          const credsFilePath = path.join('./auth_info_baileys', 'creds.json');
+          const credsFilePath = path.join(__dirname, 'auth_info_baileys', 'creds.json');
           const pastebinUrl = await uploadToPastebin(credsFilePath, 'creds.json', 'json', '1');
           const Scan_Id = pastebinUrl;
 
@@ -119,7 +112,7 @@ SESSION-ID ==> ${Scan_Id}
           await Smd.sendMessage(user, { text: MESSAGE }, { quoted: msgsss });
 
           try {
-            await fs.emptyDirSync(__dirname + '/auth_info_baileys');
+            fs.emptyDirSync(path.join(__dirname, 'auth_info_baileys'));
           } catch (e) {
             console.error('Error clearing directory:', e);
           }
@@ -134,8 +127,8 @@ SESSION-ID ==> ${Scan_Id}
             console.log("Connection closed!");
           } else if (reason === DisconnectReason.connectionLost) {
             console.log("Connection Lost from Server!");
-          } else if (reason === DisconnectReason.restartimportd) {
-            console.log("Restart importd, Restarting...");
+          } else if (reason === DisconnectReason.restartRequired) {
+            console.log("Restart required, Restarting...");
             SUHAIL().catch(err => console.log(err));
           } else if (reason === DisconnectReason.timedOut) {
             console.log("Connection TimedOut!");
@@ -152,17 +145,15 @@ SESSION-ID ==> ${Scan_Id}
     } catch (err) {
       console.log(err);
       exec('pm2 restart qasim');
-      await fs.emptyDirSync(__dirname + '/auth_info_baileys');
+      fs.emptyDirSync(path.join(__dirname, 'auth_info_baileys'));
     }
   }
 
   SUHAIL().catch(async (err) => {
     console.log(err);
-    await fs.emptyDirSync(__dirname + '/auth_info_baileys');
+    fs.emptyDirSync(path.join(__dirname, 'auth_info_baileys'));
     exec('pm2 restart qasim');
   });
-
-  return await SUHAIL();
 });
 
 module.exports = router;
