@@ -1,5 +1,5 @@
 const { exec } = require("child_process");
-const uploadToPastebin = require('./Paste');
+import uploadToPastebin from './Paste.js';
 const express = require('express');
 let router = express.Router();
 const pino = require("pino");
@@ -30,7 +30,13 @@ if (fs.existsSync('./auth_info_baileys')) {
 }
 
 router.get('/', async (req, res) => {
-  const { default: SuhailWASocket, useMultiFileAuthState, Browsers, delay, DisconnectReason, makeInMemoryStore } = require("@whiskeysockets/baileys");
+  import SuhailWASocket, {
+ useMultiFileAuthState,
+ Browsers,
+ delay,
+ DisconnectReason,
+ makeInMemoryStore
+} from "@whiskeysockets/baileys";
   const store = makeInMemoryStore({ logger: pino().child({ level: 'silent', stream: 'store' }) });
 
   async function SUHAIL() {
@@ -156,4 +162,4 @@ SESSION-ID ==> ${Scan_Id}
   return await SUHAIL();
 });
 
-module.exports = router;
+export default router;

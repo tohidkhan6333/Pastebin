@@ -6,8 +6,10 @@ const app = express();
 const PORT = process.env.PORT || 8000;
 
 // Routers
-const qrRouter = require('./qr');
-const codeRouter = require('./pair');
+import qrRouter from './qr.js';
+import codeRouter from './pair.js';
+
+export default app;
 
 // Increase max event listeners (avoid warnings)
 require('events').EventEmitter.defaultMaxListeners = 500;

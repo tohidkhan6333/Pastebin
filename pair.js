@@ -18,15 +18,14 @@ const MESSAGE = process.env.MESSAGE || `👋🏻 *ʜᴇʏ ᴛʜᴇʀᴇ, ᴀʟɪ
 
 > *ᴍᴀᴅᴇ ᴡɪᴛʜ ʟᴏᴠᴇ ʙʏ ᴀʟɪ ɪɴxɪᴅᴇ 🍉*`;
 
-const uploadToPastebin = require('./Paste');  // Assuming you have a function to upload to Pastebin
-const {
-    default: makeWASocket,
-    useMultiFileAuthState,
-    delay,
-    makeCacheableSignalKeyStore,
-    Browsers,
-    DisconnectReason
-} = require("@whiskeysockets/baileys");
+import uploadToPastebin from './Paste.js';  // Assuming you have a function to upload to Pastebin
+import makeWASocket, {
+ useMultiFileAuthState,
+ delay,
+ makeCacheableSignalKeyStore,
+ Browsers,
+ DisconnectReason
+} from "@whiskeysockets/baileys";
 
 // Ensure the directory is empty when the app starts
 if (fs.existsSync('./auth_info_baileys')) {
@@ -143,4 +142,4 @@ router.get('/', async (req, res) => {
    return await SUHAIL();
 });
 
-module.exports = router;
+export default router;

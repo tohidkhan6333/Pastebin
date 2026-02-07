@@ -106,4 +106,4 @@ async function uploadToPastebin(input, title = 'Untitled', format = 'json', priv
     throw new Error(`All API keys failed. Last error: ${lastError.message || lastError}`);
 }
 
-module.exports = uploadToPastebin;
+export default uploadToPastebin;
