@@ -1,13 +1,12 @@
-const { exec } = import("child_process");
+const express = require('express');
+const router = express.Router();
+const { exec } = require("child_process");
 const uploadToPastebin = require('./Paste');
-const express = import('express');
-let router = express.Router();
-const pino = import("pino");
-
-const { toBuffer } = import("qrcode");
-const path = import('path');
-const fs = import("fs-extra");
-const { Boom } = import("@hapi/boom");
+const pino = require("pino");
+const { toBuffer } = require("qrcode");
+const path = require('path');
+const fs = require("fs-extra");
+const { Boom } = require("@hapi/boom");
 
 const MESSAGE = process.env.MESSAGE || `
 🌐 *ʜᴇʏ ᴛʜᴇʀᴇ, ᴀʟɪ-ᴍᴅ ʙᴏᴛ ᴜsᴇʀ! 👋🏻*
