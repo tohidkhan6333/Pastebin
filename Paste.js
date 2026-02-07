@@ -35,7 +35,7 @@ async function uploadToPastebin(input, title = 'Untitled', format = 'json', priv
         console.log(`⚙️ Attempting upload with API key ${i + 1}/${API_KEYS.length}...`);
 
         try {
-            const { PasteClient, Publicity } = await import('pastebin-api');
+            const { PasteClient, Publicity } = require('pastebin-api');
             const client = new PasteClient(PASTEBIN_API_KEY);
 
             const publicityMap = {
@@ -106,4 +106,4 @@ async function uploadToPastebin(input, title = 'Untitled', format = 'json', priv
     throw new Error(`All API keys failed. Last error: ${lastError.message || lastError}`);
 }
 
-export default uploadToPastebin;
+module.exports = uploadToPastebin;
