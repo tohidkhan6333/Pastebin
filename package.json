@@ -1,12 +1,12 @@
 {
   "name": "qasim",
   "version": "0.0.1",
-  "type": "module"
+  "type": "module",
   "description": "A multi-functional WhatsApp bot Pairing Web and QR Scanner.",
   "main": "index.js",
   "engines": {
     "node": ">=20.0.0"
-    },
+  },
   "scripts": {
     "run": "pm2 start index.js --deep-monitoring --attach --name qasim",
     "qasim": "pm2 start index.js --deep-monitoring --attach --name qasim",
@@ -17,8 +17,10 @@
     "dev": "nodemon index.js"
   },
   "keywords": [
-    "baileysQr", "MdLogin", "MEGA-AI", "whatsapp-bot", "BotWhatsapp", "whatsapp-web", "whatsapp", "session", "pair-code", "express-pairing", "whatsappbot", "express-session", "whatsapp-api", "pairing", "baileys-md", "baileys-bot",
-    "whatsappLogin", "adiwajshing/baileys", "baileys-md-qr", "multi-device-qr", "whiskey sockets/baileys", "md-pair", "bot-pair", "baileysQrScanner", "botpairing", "WhatsAppPairing", "LinkDevice"
+    "baileysQr",
+    "MdLogin",
+    "MEGA-AI",
+    "whatsapp-bot"
   ],
   "author": "GlobalTechInfo",
   "license": "MIT",
@@ -38,4 +40,3 @@
     "qrcode": "^1.5.3"
   }
 }
-
