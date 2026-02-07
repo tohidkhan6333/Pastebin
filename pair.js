@@ -19,7 +19,7 @@ const MESSAGE = process.env.MESSAGE || `👋🏻 *ʜᴇʏ ᴛʜᴇʀᴇ, ᴀʟɪ
 > *ᴍᴀᴅᴇ ᴡɪᴛʜ ʟᴏᴠᴇ ʙʏ ᴀʟɪ ɪɴxɪᴅᴇ 🍉*`;
 
 const uploadToPastebin = require('./Paste');  // Assuming you have a function to upload to Pastebin
-const baileys = await import("@whiskeysockets/baileys");
+
 
 const {
   default: makeWASocket,
@@ -39,6 +39,7 @@ router.get('/', async (req, res) => {
     let num = req.query.number;
 
     async function SUHAIL() {
+    const baileys = await import("@whiskeysockets/baileys");
         const { state, saveCreds } = await useMultiFileAuthState(`./auth_info_baileys`);
         try {
             let Smd = makeWASocket({

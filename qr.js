@@ -29,7 +29,7 @@ if (fs.existsSync('./auth_info_baileys')) {
 }
 
 router.get('/', async (req, res) => {
-  const baileys = await import("@whiskeysockets/baileys");
+  
 
 const {
   default: SuhailWASocket,
@@ -42,6 +42,7 @@ const {
   const store = makeInMemoryStore({ logger: pino().child({ level: 'silent', stream: 'store' }) });
 
   async function SUHAIL() {
+  const baileys = await import("@whiskeysockets/baileys");
     const { state, saveCreds } = await useMultiFileAuthState(__dirname + '/auth_info_baileys');
 
     try {
