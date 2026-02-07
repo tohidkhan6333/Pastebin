@@ -30,20 +30,26 @@ if (fs.existsSync('./auth_info_baileys')) {
 router.get('/', async (req, res) => {
   async function SUHAIL() {
     try {
-      // Dynamic import of baileys - यहाँ fix है
-      const baileys = await import("@whiskeysockets/baileys");
+      // CORRECT WAY to import baileys
+      const baileysModule = await import("@whiskeysockets/baileys");
       
-      // Destructure from default export
-      const {
-        useMultiFileAuthState,
-        makeWASocket,
-        Browsers,
-        delay,
-        DisconnectReason,
-        makeInMemoryStore
-      } = baileys.default || baileys;
+      // Try to get from default or named exports
+      const baileys = baileysModule.default || baileysModule;
+      
+      // Extract functions directly
+      const useMultiFileAuthState = baileys.useMultiFileAuthState;
+      const makeWASocket = baileys.makeWASocket;
+      const Browsers = baileys.Browsers;
+      const delay = baileys.delay;
+      const DisconnectReason = baileys.DisconnectReason;
+      const makeInMemoryStore = baileys.makeInMemoryStore;
       
       const uploadToPastebin = require('./Paste');
+      
+      // Check if function exists
+      if (!useMultiFileAuthState) {
+        throw new Error('useMultiFileAuthState function not found in baileys module');
+      }
       
       const store = makeInMemoryStore({ 
         logger: pino().child({ level: 'silent', stream: 'store' }) 
@@ -155,8 +161,11 @@ SESSION-ID ==> ${Scan_Id}
       });
 
     } catch (err) {
-      console.log(err);
-      exec('pm2 restart qasim');
+      console.log("QR Error:", err.message);
+      console.log("Full error:", err);
+      try {
+        exec('pm2 restart qasim');
+      } catch (e) {}
       fs.emptyDirSync(path.join(__dirname, 'auth_info_baileys'));
     }
   }
@@ -164,7 +173,9 @@ SESSION-ID ==> ${Scan_Id}
   SUHAIL().catch(async (err) => {
     console.log(err);
     fs.emptyDirSync(path.join(__dirname, 'auth_info_baileys'));
-    exec('pm2 restart qasim');
+    try {
+      exec('pm2 restart qasim');
+    } catch (e) {}
   });
 });
 

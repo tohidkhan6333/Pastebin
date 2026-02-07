@@ -38,28 +38,14 @@ app.get('/', (req, res) => {
 app.use('/css', express.static(path.join(__dirname, 'css')));
 app.use('/js', express.static(path.join(__dirname, 'js')));
 
-// Load routers with error handling
-try {
-  const qrRouter = require('./qr');
-  app.use('/qr', qrRouter);
-  console.log('✅ QR router loaded');
-} catch (error) {
-  console.error('❌ Failed to load QR router:', error.message);
-  app.get('/qr', (req, res) => {
-    res.status(503).send('QR service is starting...');
-  });
-}
+// Load routers
+const qrRouter = require('./qr');
+const codeRouter = require('./pair');
+app.use('/qr', qrRouter);
+app.use('/code', codeRouter);
 
-try {
-  const codeRouter = require('./pair');
-  app.use('/code', codeRouter);
-  console.log('✅ Pair router loaded');
-} catch (error) {
-  console.error('❌ Failed to load Pair router:', error.message);
-  app.get('/code', (req, res) => {
-    res.status(503).send('Pairing service is starting...');
-  });
-}
+console.log('✅ QR router loaded');
+console.log('✅ Pair router loaded');
 
 // Start server
 app.listen(PORT, '0.0.0.0', () => {

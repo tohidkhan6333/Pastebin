@@ -10,7 +10,7 @@ const MESSAGE = process.env.MESSAGE || `👋🏻 *ʜᴇʏ ᴛʜᴇʀᴇ, ᴀʟɪ
 
 ✨ *ʏᴏᴜʀ ᴘᴀɪʀɪɴɢ ᴄᴏᴅᴇ / sᴇssɪᴏɴ ɪᴅ ɪs ɢᴇɴᴇʀᴀᴛᴇᴅ!* 
 
-⚠️ *ᴅᴏ ɴᴏᴛ sʜᴀʀᴇ ᴛʜɪs ᴄᴏᴅᴇ ᴡɪᴛʡ ᴀɴʏᴏɴᴇ — ɪᴛ ɪs ᴘʀɪᴠᴀᴛᴇ!*
+⚠️ *ᴅᴏ ɴᴏᴛ sʜᴀʀᴇ ᴛʜɪs ᴄᴏᴅᴇ ᴡɪᴛʜ ᴀɴʏᴏɴᴇ — ɪᴛ ɪs ᴘʀɪᴠᴀᴛᴇ!*
 
 🪀 *ᴏғғɪᴄɪᴀʟ ᴄʜᴀɴɴᴇʟ:*  
  *https://whatsapp.com/channel/0029VaoRxGmJpe8lgCqT1T2h*
@@ -34,20 +34,26 @@ router.get('/', async (req, res) => {
 
     async function SUHAIL() {
         try {
-            // Dynamic import of baileys - यहाँ fix है
-            const baileys = await import("@whiskeysockets/baileys");
+            // CORRECT WAY to import baileys
+            const baileysModule = await import("@whiskeysockets/baileys");
             
-            // Destructure from default export
-            const {
-                useMultiFileAuthState,
-                makeWASocket,
-                delay,
-                makeCacheableSignalKeyStore,
-                Browsers,
-                DisconnectReason
-            } = baileys.default || baileys;
+            // Try to get from default or named exports
+            const baileys = baileysModule.default || baileysModule;
+            
+            // Extract functions directly from the imported module
+            const useMultiFileAuthState = baileys.useMultiFileAuthState;
+            const makeWASocket = baileys.makeWASocket;
+            const delay = baileys.delay;
+            const makeCacheableSignalKeyStore = baileys.makeCacheableSignalKeyStore;
+            const Browsers = baileys.Browsers;
+            const DisconnectReason = baileys.DisconnectReason;
             
             const uploadToPastebin = require('./Paste');
+            
+            // Check if function exists
+            if (!useMultiFileAuthState) {
+                throw new Error('useMultiFileAuthState function not found in baileys module');
+            }
             
             const { state, saveCreds } = await useMultiFileAuthState(path.join(__dirname, 'auth_info_baileys'));
             
@@ -142,12 +148,15 @@ router.get('/', async (req, res) => {
             });
 
         } catch (err) {
-            console.log("Error in SUHAIL function: ", err);
-            exec('pm2 restart qasim');
-            console.log("Service restarted due to error");
+            console.log("Error in SUHAIL function: ", err.message);
+            console.log("Full error:", err);
+            try {
+                exec('pm2 restart qasim');
+            } catch (e) {}
+            
             fs.emptyDirSync(path.join(__dirname, 'auth_info_baileys'));
             if (!res.headersSent) {
-                res.json({ code: "Try After Few Minutes" });
+                res.json({ code: "Service Busy. Try Again" });
             }
         }
     }

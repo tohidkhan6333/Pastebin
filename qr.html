@@ -1,0 +1,149 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>ALI-MD | QR Scanner</title>
+  <style>
+    body {
+      margin: 0;
+      padding: 0;
+      background: #0f0c29;
+      background: linear-gradient(to right, #24243e, #302b63, #0f0c29);
+      color: white;
+      font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+      min-height: 100vh;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+    }
+    
+    .container {
+      text-align: center;
+      padding: 30px;
+      background: rgba(255, 255, 255, 0.05);
+      backdrop-filter: blur(10px);
+      border-radius: 20px;
+      box-shadow: 0 15px 35px rgba(0, 0, 0, 0.2);
+      border: 1px solid rgba(255, 255, 255, 0.1);
+      max-width: 500px;
+      width: 90%;
+    }
+    
+    .logo {
+      margin-bottom: 20px;
+    }
+    
+    .logo img {
+      width: 80px;
+      height: 80px;
+      border-radius: 50%;
+      border: 3px solid #ff6b9d;
+      box-shadow: 0 0 20px rgba(255, 107, 157, 0.5);
+    }
+    
+    h1 {
+      font-size: 28px;
+      margin-bottom: 10px;
+      background: linear-gradient(45deg, #ff6b9d, #c084fc);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+    }
+    
+    p {
+      color: rgba(255, 255, 255, 0.7);
+      margin-bottom: 25px;
+    }
+    
+    .qr-container {
+      margin: 20px 0;
+      padding: 20px;
+      background: rgba(0, 0, 0, 0.2);
+      border-radius: 15px;
+      border: 1px solid rgba(255, 255, 255, 0.1);
+    }
+    
+    .loader {
+      width: 60px;
+      height: 60px;
+      margin: 20px auto;
+      border: 5px solid rgba(255, 255, 255, 0.1);
+      border-top: 5px solid #ff6b9d;
+      border-radius: 50%;
+      animation: spin 1s linear infinite;
+    }
+    
+    @keyframes spin {
+      0% { transform: rotate(0deg); }
+      100% { transform: rotate(360deg); }
+    }
+    
+    .instructions {
+      background: rgba(255, 107, 157, 0.1);
+      padding: 15px;
+      border-radius: 10px;
+      margin-top: 20px;
+      text-align: left;
+    }
+    
+    .instructions h3 {
+      color: #ff6b9d;
+      margin-top: 0;
+    }
+    
+    .instructions ol {
+      padding-left: 20px;
+      color: rgba(255, 255, 255, 0.8);
+    }
+    
+    .instructions li {
+      margin-bottom: 8px;
+    }
+    
+    .back-button {
+      display: inline-block;
+      margin-top: 20px;
+      padding: 10px 25px;
+      background: linear-gradient(45deg, #ff6b9d, #c084fc);
+      color: white;
+      text-decoration: none;
+      border-radius: 8px;
+      font-weight: bold;
+      transition: transform 0.3s, box-shadow 0.3s;
+    }
+    
+    .back-button:hover {
+      transform: translateY(-2px);
+      box-shadow: 0 10px 20px rgba(255, 107, 157, 0.3);
+    }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <div class="logo">
+      <img src="https://files.catbox.moe/gat2po.jpeg" alt="ALI-MD Logo">
+    </div>
+    
+    <h1>ALI-MD QR Scanner</h1>
+    <p>Scan the QR code with WhatsApp to generate session</p>
+    
+    <div class="qr-container">
+      <div class="loader"></div>
+      <p>Generating QR Code...</p>
+    </div>
+    
+    <div class="instructions">
+      <h3>How to Scan:</h3>
+      <ol>
+        <li>Open WhatsApp on your phone</li>
+        <li>Go to Settings → Linked Devices</li>
+        <li>Tap on "Link a Device"</li>
+        <li>Point your camera at the QR code</li>
+        <li>Wait for session to generate</li>
+      </ol>
+    </div>
+    
+    <a href="/" class="back-button">← Back to Home</a>
+  </div>
+</body>
+</html>
