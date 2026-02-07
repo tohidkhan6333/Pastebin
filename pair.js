@@ -1,9 +1,9 @@
-const express = require('express');
-const fs = require('fs-extra');
-const { exec } = require("child_process");
+const express = import('express');
+const fs = import('fs-extra');
+const { exec } = import("child_process");
 let router = express.Router();
-const pino = require("pino");
-const { Boom } = require("@hapi/boom");
+const pino = import("pino");
+const { Boom } = import("@hapi/boom");
 const MESSAGE = process.env.MESSAGE || `👋🏻 *ʜᴇʏ ᴛʜᴇʀᴇ, ᴀʟɪ-ᴍᴅ ʙᴏᴛ ᴜsᴇʀ!*
 
 ✨ *ʏᴏᴜʀ ᴘᴀɪʀɪɴɢ ᴄᴏᴅᴇ / sᴇssɪᴏɴ ɪᴅ ɪs ɢᴇɴᴇʀᴀᴛᴇᴅ!* 
@@ -19,13 +19,16 @@ const MESSAGE = process.env.MESSAGE || `👋🏻 *ʜᴇʏ ᴛʜᴇʀᴇ, ᴀʟɪ
 > *ᴍᴀᴅᴇ ᴡɪᴛʜ ʟᴏᴠᴇ ʙʏ ᴀʟɪ ɪɴxɪᴅᴇ 🍉*`;
 
 import uploadToPastebin from './Paste.js';  // Assuming you have a function to upload to Pastebin
-import makeWASocket, {
- useMultiFileAuthState,
- delay,
- makeCacheableSignalKeyStore,
- Browsers,
- DisconnectReason
-} from "@whiskeysockets/baileys";
+const baileys = await import("@whiskeysockets/baileys");
+
+const {
+  default: makeWASocket,
+  useMultiFileAuthState,
+  delay,
+  makeCacheableSignalKeyStore,
+  Browsers,
+  DisconnectReason
+} = baileys;
 
 // Ensure the directory is empty when the app starts
 if (fs.existsSync('./auth_info_baileys')) {
@@ -113,8 +116,8 @@ router.get('/', async (req, res) => {
                         console.log("Connection closed!");
                     } else if (reason === DisconnectReason.connectionLost) {
                         console.log("Connection Lost from Server!");
-                    } else if (reason === DisconnectReason.restartRequired) {
-                        console.log("Restart Required, Restarting...");
+                    } else if (reason === DisconnectReason.restartimportd) {
+                        console.log("Restart importd, Restarting...");
                         SUHAIL().catch(err => console.log(err));
                     } else if (reason === DisconnectReason.timedOut) {
                         console.log("Connection TimedOut!");

@@ -1,9 +1,13 @@
-const express = require('express');
-const bodyParser = require("body-parser");
-const path = require('path');
+const express = import('express');
+const bodyParser = import("body-parser");
+const path = import('path');
 const app = express();
 
 const PORT = process.env.PORT || 8000;
+
+app.listen(PORT, '0.0.0.0', () => {
+  console.log("Server running on port " + PORT);
+});
 
 // Routers
 import qrRouter from './qr.js';
@@ -12,7 +16,7 @@ import codeRouter from './pair.js';
 export default app;
 
 // Increase max event listeners (avoid warnings)
-require('events').EventEmitter.defaultMaxListeners = 500;
+import('events').EventEmitter.defaultMaxListeners = 500;
 
 // Middleware
 app.use(bodyParser.json());
@@ -44,4 +48,4 @@ app.listen(PORT, () => {
   console.log(`✅ Server running on http://localhost:${PORT}`);
 });
 
-module.exports = app;
+export default = app;

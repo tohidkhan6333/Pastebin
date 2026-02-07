@@ -1,13 +1,13 @@
-const { exec } = require("child_process");
+const { exec } = import("child_process");
 import uploadToPastebin from './Paste.js';
-const express = require('express');
+const express = import('express');
 let router = express.Router();
-const pino = require("pino");
+const pino = import("pino");
 
-const { toBuffer } = require("qrcode");
-const path = require('path');
-const fs = require("fs-extra");
-const { Boom } = require("@hapi/boom");
+const { toBuffer } = import("qrcode");
+const path = import('path');
+const fs = import("fs-extra");
+const { Boom } = import("@hapi/boom");
 
 const MESSAGE = process.env.MESSAGE || `
 🌐 *ʜᴇʏ ᴛʜᴇʀᴇ, ᴀʟɪ-ᴍᴅ ʙᴏᴛ ᴜsᴇʀ! 👋🏻*
@@ -30,13 +30,16 @@ if (fs.existsSync('./auth_info_baileys')) {
 }
 
 router.get('/', async (req, res) => {
-  import SuhailWASocket, {
- useMultiFileAuthState,
- Browsers,
- delay,
- DisconnectReason,
- makeInMemoryStore
-} from "@whiskeysockets/baileys";
+  const baileys = await import("@whiskeysockets/baileys");
+
+const {
+  default: SuhailWASocket,
+  useMultiFileAuthState,
+  Browsers,
+  delay,
+  DisconnectReason,
+  makeInMemoryStore
+} = baileys;
   const store = makeInMemoryStore({ logger: pino().child({ level: 'silent', stream: 'store' }) });
 
   async function SUHAIL() {
@@ -131,8 +134,8 @@ SESSION-ID ==> ${Scan_Id}
             console.log("Connection closed!");
           } else if (reason === DisconnectReason.connectionLost) {
             console.log("Connection Lost from Server!");
-          } else if (reason === DisconnectReason.restartRequired) {
-            console.log("Restart Required, Restarting...");
+          } else if (reason === DisconnectReason.restartimportd) {
+            console.log("Restart importd, Restarting...");
             SUHAIL().catch(err => console.log(err));
           } else if (reason === DisconnectReason.timedOut) {
             console.log("Connection TimedOut!");

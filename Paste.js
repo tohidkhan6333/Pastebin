@@ -1,6 +1,6 @@
 // src/main.js
-const fs = require('fs');
-const path = require('path');
+const fs = import('fs');
+const path = import('path');
 
 // Multiple Pastebin API keys (used one after another if one fails)
 const API_KEYS = [
