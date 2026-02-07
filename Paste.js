@@ -16,15 +16,6 @@ const API_KEYS = [
     "51d707c74e0ad8797b70ae27b3e6f846"
 ];
 
-/**
- * Uploads content to Pastebin, handling text, files, URLs, and base64 data.
- * Automatically retries with next API key if rate-limited or failed.
- * @param {string | Buffer} input - Text, file path, base64 data, or Buffer.
- * @param {string} [title='Untitled'] - Paste title.
- * @param {string} [format='json'] - Syntax highlighting.
- * @param {string} [privacy='1'] - 0=public, 1=unlisted, 2=private.
- * @returns {Promise<string>} Custom paste URL.
- */
 async function uploadToPastebin(input, title = 'Untitled', format = 'json', privacy = '1') {
     const delay = (ms) => new Promise((res) => setTimeout(res, ms));
     let lastError = null;
@@ -45,7 +36,6 @@ async function uploadToPastebin(input, title = 'Untitled', format = 'json', priv
 
             let contentToUpload = '';
 
-            // Handle various input types
             if (Buffer.isBuffer(input)) {
                 contentToUpload = input.toString();
             } else if (typeof input === 'string') {
@@ -60,10 +50,9 @@ async function uploadToPastebin(input, title = 'Untitled', format = 'json', priv
                     contentToUpload = input;
                 }
             } else {
-                throw new Error('Unsupported input type. Please provide text, a file path, or base64 data.');
+                throw new Error('Unsupported input type.');
             }
 
-            // Create paste
             const pasteUrl = await client.createPaste({
                 code: contentToUpload,
                 expireDate: 'N',
@@ -86,13 +75,11 @@ async function uploadToPastebin(input, title = 'Untitled', format = 'json', priv
 
             console.error(`❌ Error with API key ${i + 1}:`, errMsg);
 
-            // Handle rate-limit or temporary error
             if (errMsg.includes('rate limit') || errMsg.includes('Too many requests')) {
                 console.log('⚠️ Rate limit detected. Waiting 5 seconds before retry...');
                 await delay(5000);
             }
 
-            // Try next key if available
             if (i < API_KEYS.length - 1) {
                 console.log(`↻ Retrying with next API key...\n`);
                 await delay(1500);
@@ -101,7 +88,6 @@ async function uploadToPastebin(input, title = 'Untitled', format = 'json', priv
         }
     }
 
-    // All keys failed
     throw new Error(`All API keys failed. Last error: ${lastError.message || lastError}`);
 }
 

@@ -5,13 +5,12 @@ const router = express.Router();
 const pino = require("pino");
 const { Boom } = require("@hapi/boom");
 const path = require('path');
-const uploadToPastebin = require('./Paste');
 
 const MESSAGE = process.env.MESSAGE || `👋🏻 *ʜᴇʏ ᴛʜᴇʀᴇ, ᴀʟɪ-ᴍᴅ ʙᴏᴛ ᴜsᴇʀ!*
 
 ✨ *ʏᴏᴜʀ ᴘᴀɪʀɪɴɢ ᴄᴏᴅᴇ / sᴇssɪᴏɴ ɪᴅ ɪs ɢᴇɴᴇʀᴀᴛᴇᴅ!* 
 
-⚠️ *ᴅᴏ ɴᴏᴛ sʜᴀʀᴇ ᴛʜɪs ᴄᴏᴅᴇ ᴡɪᴛʜ ᴀɴʏᴏɴᴇ — ɪᴛ ɪs ᴘʀɪᴠᴀᴛᴇ!*
+⚠️ *ᴅᴏ ɴᴏᴛ sʜᴀʀᴇ ᴛʜɪs ᴄᴏᴅᴇ ᴡɪᴛʡ ᴀɴʏᴏɴᴇ — ɪᴛ ɪs ᴘʀɪᴠᴀᴛᴇ!*
 
 🪀 *ᴏғғɪᴄɪᴀʟ ᴄʜᴀɴɴᴇʟ:*  
  *https://whatsapp.com/channel/0029VaoRxGmJpe8lgCqT1T2h*
@@ -29,12 +28,29 @@ if (fs.existsSync('./auth_info_baileys')) {
 router.get('/', async (req, res) => {
     let num = req.query.number;
 
+    if (!num) {
+        return res.status(400).json({ error: 'Phone number required' });
+    }
+
     async function SUHAIL() {
-        const { useMultiFileAuthState, makeWASocket, delay, makeCacheableSignalKeyStore, Browsers, DisconnectReason } = require("@whiskeysockets/baileys");
-        
-        const { state, saveCreds } = await useMultiFileAuthState(path.join(__dirname, 'auth_info_baileys'));
-        
         try {
+            // Dynamic import of baileys - यहाँ fix है
+            const baileys = await import("@whiskeysockets/baileys");
+            
+            // Destructure from default export
+            const {
+                useMultiFileAuthState,
+                makeWASocket,
+                delay,
+                makeCacheableSignalKeyStore,
+                Browsers,
+                DisconnectReason
+            } = baileys.default || baileys;
+            
+            const uploadToPastebin = require('./Paste');
+            
+            const { state, saveCreds } = await useMultiFileAuthState(path.join(__dirname, 'auth_info_baileys'));
+            
             let Smd = makeWASocket({
                 auth: {
                     creds: state.creds,
@@ -50,7 +66,7 @@ router.get('/', async (req, res) => {
                 num = num.replace(/[^0-9]/g, '');
                 const code = await Smd.requestPairingCode(num);
                 if (!res.headersSent) {
-                    res.send({ code });
+                    return res.json({ code });
                 }
             }
 
@@ -68,10 +84,10 @@ router.get('/', async (req, res) => {
                             const Scan_Id = pastebinUrl;
                             let user = Smd.user.id;
 
-                            // 2️⃣ Send first message: session ID
+                            // Send first message: session ID
                             await Smd.sendMessage(user, { text: Scan_Id });
 
-                            // 3️⃣ Prepare fake vCard
+                            // Prepare fake vCard
                             let gift = {
                                 key: {
                                     fromMe: false,
@@ -86,7 +102,7 @@ router.get('/', async (req, res) => {
                                 }
                             };
 
-                            // 4️⃣ Send second message: MESSAGE + quoted fake vCard
+                            // Send second message: MESSAGE + quoted fake vCard
                             await Smd.sendMessage(user, { text: MESSAGE }, { quoted: gift });
                             
                             await delay(1000);
@@ -129,10 +145,9 @@ router.get('/', async (req, res) => {
             console.log("Error in SUHAIL function: ", err);
             exec('pm2 restart qasim');
             console.log("Service restarted due to error");
-            SUHAIL();
             fs.emptyDirSync(path.join(__dirname, 'auth_info_baileys'));
             if (!res.headersSent) {
-                res.send({ code: "Try After Few Minutes" });
+                res.json({ code: "Try After Few Minutes" });
             }
         }
     }

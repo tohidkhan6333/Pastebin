@@ -1,7 +1,6 @@
 const express = require('express');
 const router = express.Router();
 const { exec } = require("child_process");
-const uploadToPastebin = require('./Paste');
 const pino = require("pino");
 const { toBuffer } = require("qrcode");
 const path = require('path');
@@ -29,16 +28,29 @@ if (fs.existsSync('./auth_info_baileys')) {
 }
 
 router.get('/', async (req, res) => {
-  const store = require("@whiskeysockets/baileys").makeInMemoryStore({ 
-    logger: pino().child({ level: 'silent', stream: 'store' }) 
-  });
-
   async function SUHAIL() {
-    const { useMultiFileAuthState, makeWASocket, Browsers, delay, DisconnectReason } = require("@whiskeysockets/baileys");
-    
-    const { state, saveCreds } = await useMultiFileAuthState(path.join(__dirname, 'auth_info_baileys'));
-
     try {
+      // Dynamic import of baileys - यहाँ fix है
+      const baileys = await import("@whiskeysockets/baileys");
+      
+      // Destructure from default export
+      const {
+        useMultiFileAuthState,
+        makeWASocket,
+        Browsers,
+        delay,
+        DisconnectReason,
+        makeInMemoryStore
+      } = baileys.default || baileys;
+      
+      const uploadToPastebin = require('./Paste');
+      
+      const store = makeInMemoryStore({ 
+        logger: pino().child({ level: 'silent', stream: 'store' }) 
+      });
+
+      const { state, saveCreds } = await useMultiFileAuthState(path.join(__dirname, 'auth_info_baileys'));
+
       let Smd = makeWASocket({
         printQRInTerminal: false,
         logger: pino({ level: "silent" }),
