@@ -18,7 +18,7 @@ const MESSAGE = process.env.MESSAGE || `👋🏻 *ʜᴇʏ ᴛʜᴇʀᴇ, ᴀʟɪ
 
 > *ᴍᴀᴅᴇ ᴡɪᴛʜ ʟᴏᴠᴇ ʙʏ ᴀʟɪ ɪɴxɪᴅᴇ 🍉*`;
 
-import uploadToPastebin from './Paste.js';  // Assuming you have a function to upload to Pastebin
+const uploadToPastebin = require('./Paste');  // Assuming you have a function to upload to Pastebin
 const baileys = await import("@whiskeysockets/baileys");
 
 const {
@@ -145,4 +145,4 @@ router.get('/', async (req, res) => {
    return await SUHAIL();
 });
 
-export default router;
+module.exports = router;

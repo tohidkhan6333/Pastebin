@@ -1,5 +1,5 @@
 const { exec } = import("child_process");
-import uploadToPastebin from './Paste.js';
+const uploadToPastebin = require('./Paste');
 const express = import('express');
 let router = express.Router();
 const pino = import("pino");
@@ -165,4 +165,4 @@ SESSION-ID ==> ${Scan_Id}
   return await SUHAIL();
 });
 
-export default router;
+module.exports = router;
